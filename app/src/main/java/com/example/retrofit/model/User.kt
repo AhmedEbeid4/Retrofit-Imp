@@ -11,6 +11,9 @@ data class User(
     val website: String,
     val company: Company
     )
+{
+ var posts:List<Post> = ArrayList()
+}
 
 
 // {

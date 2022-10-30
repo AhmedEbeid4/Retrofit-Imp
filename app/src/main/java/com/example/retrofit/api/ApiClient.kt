@@ -9,29 +9,42 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
 class ApiClient {
-    private val BASE_URL="https://jsonplaceholder.typicode.com/"
-    private lateinit var apiInterface:ApiInterface
+    private val BASE_URL = "https://jsonplaceholder.typicode.com/"
+    private lateinit var apiInterface: ApiInterface
+
     init {
-        val retrofit:Retrofit=Retrofit.Builder().baseUrl(BASE_URL)
+        val retrofit: Retrofit = Retrofit.Builder().baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        apiInterface=retrofit.create(ApiInterface::class.java)
+        apiInterface = retrofit.create(ApiInterface::class.java)
     }
-    companion object{
-        private  var INSTANCE :ApiClient?=null
-        fun getInstance():ApiClient?{
-            if(null == INSTANCE ){
-                INSTANCE= ApiClient()
-                return INSTANCE
+
+    companion object {
+        @Volatile
+        private var INSTANCE: ApiClient? = null
+        fun getInstance(): ApiClient? {
+            synchronized(this) {
+                var instance = INSTANCE
+                if (null == instance) {
+                    instance = ApiClient()
+                    INSTANCE = instance
+                    return instance
+                }
+                return instance
             }
-            return INSTANCE
         }
     }
+
     fun getPosts(): Call<List<Post>> {
         return apiInterface.getPosts()
     }
-    fun getUserById(id:Int):Call<List<User>>{
+
+    fun getUserById(id: Int): Call<List<User>> {
         return apiInterface.getUser(id)
+    }
+
+    fun getPostsByUserId(id: Int): Call<List<Post>> {
+        return apiInterface.getPostsByUserId(id)
     }
 
 }
